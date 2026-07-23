@@ -1,0 +1,98 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Configure foundryvtt",
+    "$id": "http://nethserver.org/json-schema/task/input/foundryvtt/configure-module",
+    "description": "Configure the Foundry Virtual Tabletop module",
+    "examples": [
+        {
+            "host": "foundry.example.org",
+            "lets_encrypt": true,
+            "http2https": true,
+            "admin_key": "s3cr3t-admin",
+            "auth_method": "credentials",
+            "foundry_username": "myaccount",
+            "foundry_password": "my-foundry-password",
+            "license_key": "AAAA-BBBB-CCCC-DDDD-EEEE-FFFF",
+            "foundry_version": "",
+            "timezone": "Europe/Berlin"
+        }
+    ],
+    "type": "object",
+    "required": ["host", "auth_method"],
+    "properties": {
+        "host": {
+            "type": "string",
+            "title": "Host name",
+            "description": "Fully qualified domain name under which Foundry VTT is published. Foundry binds the license to this host, so pick it before activating the license.",
+            "format": "hostname",
+            "pattern": "\\."
+        },
+        "lets_encrypt": {
+            "type": "boolean",
+            "title": "Let's Encrypt certificate",
+            "description": "Request a valid Let's Encrypt certificate for the host name."
+        },
+        "http2https": {
+            "type": "boolean",
+            "title": "HTTP to HTTPS redirection",
+            "description": "Redirect all HTTP requests to HTTPS."
+        },
+        "admin_key": {
+            "type": "string",
+            "title": "Administrator access key",
+            "description": "Password that protects the Foundry setup/configuration screen (FOUNDRY_ADMIN_KEY). Leave empty to disable admin protection.",
+            "format": "password"
+        },
+        "auth_method": {
+            "type": "string",
+            "title": "Software download method",
+            "description": "How the Foundry software is fetched on first start: with your foundryvtt.com account, or with a timed presigned download URL.",
+            "enum": ["credentials", "release_url"],
+            "default": "credentials"
+        },
+        "foundry_username": {
+            "type": "string",
+            "title": "Foundry account (username or e-mail)",
+            "description": "foundryvtt.com account used to download the software and fetch a license (FOUNDRY_USERNAME). Required when download method is 'credentials'."
+        },
+        "foundry_password": {
+            "type": "string",
+            "title": "Foundry account password",
+            "description": "Password for the foundryvtt.com account (FOUNDRY_PASSWORD). Required when download method is 'credentials'.",
+            "format": "password"
+        },
+        "release_url": {
+            "type": "string",
+            "title": "Presigned release URL",
+            "description": "Timed download URL copied from your foundryvtt.com profile (FOUNDRY_RELEASE_URL). Used when download method is 'release_url'.",
+            "format": "uri"
+        },
+        "license_key": {
+            "type": "string",
+            "title": "License key",
+            "description": "Foundry license key in AAAA-BBBB-CCCC-... form (FOUNDRY_LICENSE_KEY). Optional: if empty and account credentials are given, a license is fetched automatically.",
+            "format": "password"
+        },
+        "foundry_version": {
+            "type": "string",
+            "title": "Foundry version",
+            "description": "Specific Foundry version to install, e.g. 13.347 (FOUNDRY_VERSION). Leave empty to use the image default (latest stable)."
+        },
+        "timezone": {
+            "type": "string",
+            "title": "Timezone",
+            "description": "TZ database name for scheduling and log timestamps, e.g. Europe/Berlin.",
+            "default": "UTC"
+        }
+    },
+    "allOf": [
+        {
+            "if": { "properties": { "auth_method": { "const": "credentials" } } },
+            "then": { "required": ["foundry_username", "foundry_password"] }
+        },
+        {
+            "if": { "properties": { "auth_method": { "const": "release_url" } } },
+            "then": { "required": ["release_url"] }
+        }
+    ]
+}

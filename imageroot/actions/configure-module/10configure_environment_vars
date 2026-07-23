@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 tebbi
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Store the Traefik transport settings and the Foundry VTT configuration
+# (download credentials, license, admin key) passed to the felddy container.
+
+import os
+import sys
+import json
+
+import agent
+
+data = json.load(sys.stdin)
+
+
+def set_secret(key, value):
+    # The settings UI never echoes secrets back, so a blank field means "keep
+    # the value that is already stored" rather than "clear it". Only overwrite
+    # when the form actually supplied a new value.
+    if value:
+        agent.set_env(key, value)
+    elif key not in os.environ:
+        agent.set_env(key, "")
+
+
+host = data["host"]
+
+# Traefik transport.
+agent.set_env("TRAEFIK_HOST", host)
+agent.set_env("TRAEFIK_HTTP2HTTPS", data.get("http2https", True))
+
+# Public address Foundry advertises. Kept in sync with the Traefik host name;
+# also the value the license is bound to.
+agent.set_env("FOUNDRY_HOSTNAME", host)
+
+# Admin access key for the Foundry setup screen (blank keeps the current one).
+set_secret("FOUNDRY_ADMIN_KEY", data.get("admin_key", ""))
+
+# Software download / activation. Depending on the chosen method only one of the
+# credential pairs is populated; the other is explicitly cleared so the
+# container ignores it. The active method's secret is preserved when left blank.
+auth_method = data.get("auth_method", "credentials")
+if auth_method == "release_url":
+    set_secret("FOUNDRY_RELEASE_URL", data.get("release_url", ""))
+    agent.set_env("FOUNDRY_USERNAME", "")
+    agent.set_env("FOUNDRY_PASSWORD", "")
+else:
+    agent.set_env("FOUNDRY_USERNAME", data.get("foundry_username", ""))
+    set_secret("FOUNDRY_PASSWORD", data.get("foundry_password", ""))
+    agent.set_env("FOUNDRY_RELEASE_URL", "")
+
+set_secret("FOUNDRY_LICENSE_KEY", data.get("license_key", ""))
+agent.set_env("FOUNDRY_VERSION", data.get("foundry_version", ""))
+agent.set_env("TZ", data.get("timezone") or "UTC")
+
+agent.dump_env()

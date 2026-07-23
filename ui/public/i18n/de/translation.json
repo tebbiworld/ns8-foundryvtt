@@ -1,0 +1,63 @@
+{
+    "common": { "required": "Erforderlich", "processing": "Verarbeitung läuft..." },
+    "status": {
+        "title": "Status", "app_instance": "App-Instanz",
+        "services": "Dienst | Dienste", "app_images": "App-Abbild | App-Abbilder",
+        "app_volumes": "App-Volume | App-Volumes", "installation_node": "Knoten der Installation",
+        "node": "Knoten", "name": "Name", "size": "Größe", "created": "Erstellt", "mount": "Mount",
+        "no_services": "Keine Dienste", "no_images": "Keine Abbilder", "no_volumes": "Keine Volumes"
+    },
+    "settings": {
+        "title": "Einstellungen", "configure_instance": "{instance} konfigurieren", "save": "Speichern",
+        "host": "Hostname (FQDN)", "host_placeholder": "foundry.example.org",
+        "host_helper": "Öffentlicher Hostname, unter dem Foundry veröffentlicht wird. Muss auf diesen Server auflösen. Foundry bindet die Lizenz an diesen Hostnamen — vor der Aktivierung festlegen.",
+        "lets_encrypt": "Let's-Encrypt-Zertifikat anfordern", "http2https": "HTTP auf HTTPS umleiten",
+        "enabled": "Aktiviert", "disabled": "Deaktiviert",
+        "show": "Anzeigen", "hide": "Verbergen",
+        "secret_keep_placeholder": "•••••••• (unverändert)",
+        "secret_is_set": "Ein Wert ist gespeichert — leer lassen, um ihn beizubehalten.",
+
+        "software_section": "Foundry-Software",
+        "auth_method": "Download-Methode der Software",
+        "auth_method_helper": "Wie die Foundry-Software beim ersten Start heruntergeladen und lizenziert wird.",
+        "auth_credentials": "foundryvtt.com-Konto",
+        "auth_release_url": "Signierte Release-URL",
+        "foundry_username": "Foundry-Konto (Benutzername oder E-Mail)",
+        "foundry_username_helper": "foundryvtt.com-Konto zum Herunterladen der Software und Beziehen einer Lizenz.",
+        "foundry_password": "Passwort des Foundry-Kontos",
+        "release_url": "Signierte Release-URL",
+        "release_url_helper": "Zeitlich begrenzte Download-URL aus Ihrem foundryvtt.com-Profil.",
+        "license_key": "Lizenzschlüssel",
+        "license_key_helper": "Foundry-Lizenzschlüssel (AAAA-BBBB-...). Optional, wenn Kontodaten angegeben sind — dann wird automatisch eine Lizenz bezogen.",
+
+        "instance_section": "Instanzoptionen",
+        "admin_key": "Administrator-Zugangsschlüssel",
+        "admin_key_helper": "Passwort, das den Foundry-Konfigurationsbildschirm schützt.",
+        "foundry_version": "Foundry-Version",
+        "foundry_version_placeholder": "neueste stabile",
+        "foundry_version_helper": "Bestimmte zu installierende Version, z. B. 13.347. Leer lassen für die neueste stabile Version.",
+        "timezone": "Zeitzone",
+        "timezone_placeholder": "UTC",
+        "timezone_helper": "TZ-Datenbankname für Zeitpläne und Log-Zeitstempel, z. B. Europe/Berlin.",
+
+        "web_url": "Webanwendung", "web_url_desc": "Foundry VTT im Browser öffnen unter {url}",
+        "license_hint_title": "Eigene Lizenz erforderlich",
+        "license_hint_desc": "Foundry Virtual Tabletop ist kommerzielle Software. Sie müssen Ihre eigene foundryvtt.com-Lizenz bereitstellen; dieses Modul enthält keine.",
+        "domain_already_used_in_traefik": "Dieser Hostname wird bereits von einer anderen Instanz verwendet."
+    },
+    "about": { "title": "Über" },
+    "task": { "cannot_create_task": "Aufgabe {action} kann nicht erstellt werden" },
+    "action": {
+        "get-status": "Status abrufen", "get-configuration": "Konfiguration abrufen",
+        "configure-module": "Modul konfigurieren", "get-module-info": "Modul-Info abrufen", "get-name": "Name abrufen",
+        "list-backup-repositories": "Backup-Speicherorte auflisten", "list-backups": "Backups auflisten",
+        "list-installed-modules": "Installierte Module auflisten"
+    },
+    "error": {
+        "error": "Fehler", "generic_error": "Etwas ist schief gegangen", "validation_error": "Fehler bei der Validierung",
+        "network_error": "Netzwerk-Fehler", "network_timeout": "Netzwerk-Zeitüberschreitung",
+        "401": "Authentifizierung fehlerhaft", "403": "Vorgang nicht autorisiert", "404": "Ressource nicht gefunden",
+        "cannot_retrieve_module_info": "Fehler beim Abruf der Modul-Info",
+        "cannot_retrieve_installed_modules": "Fehler beim Abruf installierter Module"
+    }
+}

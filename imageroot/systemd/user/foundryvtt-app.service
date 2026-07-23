@@ -1,0 +1,40 @@
+#
+# Copyright (C) 2026 tebbi
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Foundry Virtual Tabletop application container (felddy/foundryvtt). The Foundry
+# software is downloaded on first start using the configured account credentials
+# or presigned release URL, then cached and run from the mounted data volume.
+#
+# Storage (isolated rootless named volume, never host paths):
+#   /data   - Foundry data, worlds, modules, config, license and download cache
+#
+# Reverse-proxy awareness: Traefik terminates TLS on 443, so Foundry is told to
+# advertise HTTPS on the standard port (FOUNDRY_PROXY_SSL / FOUNDRY_PROXY_PORT)
+# and to use the public host name (FOUNDRY_HOSTNAME).
+
+[Unit]
+Description=Foundry VTT server
+BindsTo=foundryvtt.service
+After=foundryvtt.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+WorkingDirectory=%S/state
+Restart=always
+TimeoutStartSec=900
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/foundryvtt-app.pid %t/foundryvtt-app.ctr-id
+# The launcher only passes the optional FOUNDRY_* settings when they are
+# non-empty, so an empty value never overrides an image default (e.g. version).
+ExecStart=%h/.config/bin/foundryvtt-run %t
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/foundryvtt-app.ctr-id -t 30
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/foundryvtt-app.ctr-id
+PIDFile=%t/foundryvtt-app.pid
+Type=forking
+SyslogIdentifier=%u
+
+[Install]
+WantedBy=default.target

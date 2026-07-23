@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 tebbi
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Launch the Foundry VTT (felddy) application container. Optional settings are
+# only passed when non-empty, so an empty value never overrides the image's own
+# default. This matters in particular for FOUNDRY_VERSION: passing it empty makes
+# the felddy entrypoint warn about a version mismatch and try to install version
+# "", instead of using the image default.
+
+set -e
+
+runtime_dir="${1:?runtime dir (%t) required}"
+
+optional=()
+[ -n "${FOUNDRY_VERSION}" ]     && optional+=(--env "FOUNDRY_VERSION=${FOUNDRY_VERSION}")
+[ -n "${FOUNDRY_LICENSE_KEY}" ] && optional+=(--env "FOUNDRY_LICENSE_KEY=${FOUNDRY_LICENSE_KEY}")
+[ -n "${FOUNDRY_RELEASE_URL}" ] && optional+=(--env "FOUNDRY_RELEASE_URL=${FOUNDRY_RELEASE_URL}")
+[ -n "${FOUNDRY_USERNAME}" ]    && optional+=(--env "FOUNDRY_USERNAME=${FOUNDRY_USERNAME}")
+[ -n "${FOUNDRY_PASSWORD}" ]    && optional+=(--env "FOUNDRY_PASSWORD=${FOUNDRY_PASSWORD}")
+
+exec /usr/bin/podman run \
+    --conmon-pidfile "${runtime_dir}/foundryvtt-app.pid" \
+    --cidfile "${runtime_dir}/foundryvtt-app.ctr-id" \
+    --cgroups=no-conmon \
+    --pod-id-file "${runtime_dir}/foundryvtt.pod-id" \
+    --replace -d --name foundryvtt-app \
+    --env "TZ=${TZ}" \
+    --env "FOUNDRY_HOSTNAME=${FOUNDRY_HOSTNAME}" \
+    --env FOUNDRY_PROXY_SSL=true \
+    --env FOUNDRY_PROXY_PORT=443 \
+    --env "FOUNDRY_ADMIN_KEY=${FOUNDRY_ADMIN_KEY}" \
+    --env CONTAINER_PRESERVE_CONFIG=true \
+    "${optional[@]}" \
+    --volume foundryvtt-data:/data:z \
+    "${FOUNDRYVTT_IMAGE}"

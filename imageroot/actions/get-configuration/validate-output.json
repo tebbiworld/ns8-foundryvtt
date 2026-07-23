@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "get-configuration output",
+    "$id": "http://schema.nethserver.org/foundryvtt/get-configuration-output.json",
+    "description": "Get Foundry VTT configuration",
+    "type": "object",
+    "properties": {
+        "host": { "type": "string" },
+        "http2https": { "type": "boolean" },
+        "lets_encrypt": { "type": "boolean" },
+        "auth_method": { "type": "string" },
+        "foundry_username": { "type": "string" },
+        "foundry_version": { "type": "string" },
+        "timezone": { "type": "string" },
+        "admin_key_set": { "type": "boolean" },
+        "foundry_password_set": { "type": "boolean" },
+        "release_url_set": { "type": "boolean" },
+        "license_key_set": { "type": "boolean" },
+        "url": { "type": "string" }
+    }
+}
