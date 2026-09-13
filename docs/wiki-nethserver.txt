@@ -1,0 +1,89 @@
+======Foundry VTT======
+[[https://foundryvtt.com/|Foundry Virtual Tabletop]] is a self-hosted, web-based virtual tabletop for pen-and-paper role-playing games: maps, tokens, dice, character sheets and hundreds of game systems and add-on modules, played in the browser by the game master and the players.
+
+====Announcement and talks====
+The Foundry VTT app announcement TBA
+
+Foundry VTT is a community application from the [[ns8:tebbiworld_repository|tebbiworld]] repository. Documentation and source can be found on [[https://github.com/tebbiworld/ns8-foundryvtt|Github]]
+
+=====What it does=====
+The module runs Foundry through the [[https://github.com/felddy/foundryvtt-docker|felddy/foundryvtt]] container image, the de-facto standard for containerised Foundry. Foundry is a Node.js web and WebSocket application, which maps cleanly onto NS8: one host name published through Traefik with TLS, Let's Encrypt and WebSocket proxying.
+
+**You need your own Foundry VTT licence.** The image contains no Foundry software: on first start it downloads Foundry from your foundryvtt.com account (credentials or a timed download %%URL%% from your profile) into the data volume. Foundry Gaming has explicitly permitted this packaging model; nothing of Foundry is redistributed.
+
+=====Architecture=====
+A single rootless container.
+
+^ Component ^ Purpose ^
+| ''foundryvtt'' | Foundry VTT server, HTTP + WebSocket on port 30000, ''ghcr.io/felddy/foundryvtt:14'' |
+| volume ''foundryvtt-data'' | ''/data'': worlds, systems, modules, configuration, licence and the software download cache |
+
+One allocated TCP port on the node loopback, fronted by Traefik. No dedicated node IP. The container receives ''FOUNDRY_PROXY_SSL=true'' and ''FOUNDRY_PROXY_PORT=443'' automatically so Foundry generates correct links behind the reverse proxy.
+
+=====Installation=====
+On the NethServer 8 cluster leader:
+
+<code bash>
+add-module ghcr.io/tebbiworld/foundryvtt:1.0.0 1
+</code>
+
+Configure it with your foundryvtt.com account, replacing the host name:
+
+<code bash>
+api-cli run module/foundryvtt1/configure-module --data '{
+  "host": "foundry.example.org",
+  "lets_encrypt": true,
+  "http2https": true,
+  "auth_method": "credentials",
+  "foundry_username": "myaccount",
+  "foundry_password": "my-foundry-password",
+  "admin_key": "s3cr3t-admin",
+  "timezone": "Europe/Berlin"
+}'
+</code>
+
+The first start downloads and installs Foundry; allow a few minutes (the unit waits up to 15 minutes). Until then the host name answers "Bad Gateway". Then open ''%%https://foundry.example.org/%%'' and finish the licence activation in Foundry.
+
+Choose the host name **before** activating the licence: Foundry binds the licence to it.
+
+=====Settings=====
+
+^ Setting ^ Description ^
+| Host name | %%FQDN%% Foundry is published on; also ''FOUNDRY_HOSTNAME''. |
+| Let's Encrypt certificate | Requests a certificate for the host name. Requires that ports 80 and 443 of this name reach this node. |
+| HTTP to HTTPS redirection | Redirects HTTP to HTTPS. |
+| Administrator access key | Password protecting Foundry's setup screen (''FOUNDRY_ADMIN_KEY''). Empty = no admin lock. |
+| Software download method | ''credentials'' (foundryvtt.com account) or ''release_url'' (timed presigned %%URL%% from your profile — copy it right before saving, it expires quickly). |
+| Foundry account / password | Used to download the software and fetch the licence. Stored, never displayed; a blank field keeps the stored value. |
+| Presigned release URL | Alternative to the account. |
+| Licence key | Optional; fetched automatically when empty and account credentials are set. |
+| Foundry version | Specific version, e.g. ''13.347''; empty = latest stable of the image's major version. |
+| Timezone | ''TZ'' for the container. |
+
+The software is cached in the data volume after the first download; later restarts do not download again.
+
+=====Backup=====
+The NS8 backup includes the ''foundryvtt-data'' volume: worlds, systems, modules, configuration and licence. Foundry's own world backups (Foundry 11+) also live there.
+
+=====Licences and trademarks=====
+Unofficial, community-built package, not affiliated with or endorsed by Foundry Gaming LLC. "Foundry Virtual Tabletop" and the anvil logo are trademarks of Foundry Gaming LLC; the logo is used unmodified from the Foundry Community Content Kit according to its brand guidelines, only to identify the packaged software.
+
+The module redistributes no Foundry software; users download it with their own licence. The [[https://github.com/felddy/foundryvtt-docker|felddy/foundryvtt]] image is MIT licensed. The module's own code is licensed %%GPL%%-3.0-or-later.
+
+=====Links=====
+
+  * [[https://foundryvtt.com/kb/|Foundry knowledge base]]
+  * [[https://github.com/felddy/foundryvtt-docker|felddy/foundryvtt image]]
+  * [[https://github.com/tebbiworld/ns8-foundryvtt|Module on Github]]
+  * [[https://github.com/tebbiworld/ns8-foundryvtt/issues|Bug reports]]
+
+=====Disclaimer=====
+Private hobby project, shared as-is. No warranty, no guaranteed support, use at your own risk.
+
+----
+{{tag>application}}
+{{tag>category:media}}
+{{tag>status:Alpha}}
+{{tag>certlevel:1}}
+{{tag>repo:tebbiworld}}
+{{tag>description:"Foundry Virtual Tabletop — self-hosted virtual tabletop for tabletop RPGs"}}
