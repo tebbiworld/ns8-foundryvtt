@@ -4,9 +4,14 @@
     "en": "Foundry Virtual Tabletop — self-hosted web virtual tabletop for tabletop RPGs",
     "de": "Foundry Virtual Tabletop — selbst gehosteter virtueller Tisch für Pen-&-Paper-Rollenspiele"
   },
-  "categories": ["media"],
+  "categories": [
+    "multimedia"
+  ],
   "authors": [
-    { "name": "tebbi", "email": "info@ebbinghaus.world" }
+    {
+      "name": "tebbi",
+      "email": "info@ebbinghaus.world"
+    }
   ],
   "docs": {
     "documentation_url": "https://foundryvtt.com/kb/",
