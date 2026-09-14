@@ -16,7 +16,7 @@ reponame="foundryvtt"
 # systemd unit as ${FOUNDRY_IMAGE}. The tag tracks the felddy tooling major
 # version; the actual Foundry software version is selected at runtime through
 # FOUNDRY_VERSION (empty = latest stable).
-foundry_image="ghcr.io/felddy/foundryvtt:14"
+foundry_image="ghcr.io/felddy/foundryvtt:14.367.0"
 
 container=$(buildah from scratch)
 
