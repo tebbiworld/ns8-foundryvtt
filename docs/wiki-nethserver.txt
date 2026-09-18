@@ -17,7 +17,7 @@ Foundry VTT is a community application from the [[ns8:tebbiworld_repository|tebb
   * Runs Foundry VTT as a rootless Podman container (image ''ghcr.io/felddy/foundryvtt'', tag ''14'').
   * Publishes Foundry on a host name of your choice through the Traefik instance of the node, with optional Let's Encrypt certificate and HTTP→HTTPS redirect. Foundry uses HTTP and WebSocket over this single HTTPS host.
   * The container listens on one allocated port on ''127.0.0.1'' only. No additional ports and no dedicated IP address are required.
-  * Foundry is informed that it runs behind an HTTPS reverse proxy on port 443, so invitation links point to ''https://<host>/''.
+  * Foundry is informed that it runs behind an HTTPS reverse proxy on port 443, so invitation links point to ''%%https://<host>/%%''.
 
 =====Installation=====
 On a NethServer 8 node:
@@ -29,7 +29,7 @@ Then open the module settings, fill in the fields (see below) and save.
 
 **First start:** the container downloads the Foundry software. Depending on the connection this takes several minutes; the module allows up to 15 minutes for the start.
 
-After the start, open ''https://<host>/''. Foundry shows its license agreement and then asks for the administrator access key.
+After the start, open ''%%https://<host>/%%''. Foundry shows its license agreement and then asks for the administrator access key.
 
 =====Settings=====
 ^ Setting ^ Required ^ Description ^
