@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.1.0 — 2026-09-19
+
+Alignment with the NethServer module conventions (NethServer/agents skills).
+
+### Changed
+
+- **Secrets moved out of the module environment.** The admin key, the foundryvtt.com password, the license key and the presigned release URL are now kept in `state/passwords.env` (mode 0600) instead of `state/environment`, which NS8 mirrors to Redis in plain text. Existing installations are migrated on update; the values do not change. The secrets are no longer passed on the podman command line.
+- **Module backup now contains the data.** New `etc/state-include.conf`: the backup holds the `foundryvtt-data` volume (worlds, systems, modules, assets) and the secrets file. Before, only the module environment was saved.
+- **Working restore.** New `restore-module` steps re-apply every setting on the restored instance.
+- Service restarts list every unit of the pod explicitly.
+
+### Added
+
+- Robot Framework tests (install, update from the previous release, backup and restore) run on real NS8 nodes through `stephdl/ns8-ci-actions`.
+
 ## 1.0.2 — 2026-09-14
 
 ### Fixed
