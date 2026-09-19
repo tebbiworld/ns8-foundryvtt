@@ -14,10 +14,13 @@ import sys
 import json
 
 import agent
+import modsecrets
+
+_secrets = modsecrets.read()
 
 host = os.getenv("TRAEFIK_HOST", "")
 
-auth_method = "release_url" if os.getenv("FOUNDRY_RELEASE_URL") else "credentials"
+auth_method = "release_url" if _secrets.get("FOUNDRY_RELEASE_URL") else "credentials"
 
 config = {
     "host": host,
@@ -27,10 +30,10 @@ config = {
     "foundry_username": os.getenv("FOUNDRY_USERNAME", ""),
     "foundry_version": os.getenv("FOUNDRY_VERSION", ""),
     "timezone": os.getenv("TZ", "UTC"),
-    "admin_key_set": bool(os.getenv("FOUNDRY_ADMIN_KEY")),
-    "foundry_password_set": bool(os.getenv("FOUNDRY_PASSWORD")),
-    "release_url_set": bool(os.getenv("FOUNDRY_RELEASE_URL")),
-    "license_key_set": bool(os.getenv("FOUNDRY_LICENSE_KEY")),
+    "admin_key_set": bool(_secrets.get("FOUNDRY_ADMIN_KEY")),
+    "foundry_password_set": bool(_secrets.get("FOUNDRY_PASSWORD")),
+    "release_url_set": bool(_secrets.get("FOUNDRY_RELEASE_URL")),
+    "license_key_set": bool(_secrets.get("FOUNDRY_LICENSE_KEY")),
     "url": f"https://{host}/" if host else "",
 }
 

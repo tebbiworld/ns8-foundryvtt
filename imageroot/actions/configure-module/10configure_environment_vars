@@ -13,18 +13,27 @@ import sys
 import json
 
 import agent
+import modsecrets
 
 data = json.load(sys.stdin)
 
 
+stored = modsecrets.read()
+changed = {}
+
+
 def set_secret(key, value):
-    # The settings UI never echoes secrets back, so a blank field means "keep
-    # the value that is already stored" rather than "clear it". Only overwrite
-    # when the form actually supplied a new value.
+    # Secrets are kept in state/passwords.env (0600), never in the module
+    # environment. The settings UI never echoes them back, so a blank field
+    # means "keep the stored value" rather than "clear it".
     if value:
-        agent.set_env(key, value)
-    elif key not in os.environ:
-        agent.set_env(key, "")
+        changed[key] = value
+    elif key not in stored:
+        changed[key] = ""
+
+
+def clear_secret(key):
+    changed[key] = ""
 
 
 host = data["host"]
@@ -32,6 +41,9 @@ host = data["host"]
 # Traefik transport.
 agent.set_env("TRAEFIK_HOST", host)
 agent.set_env("TRAEFIK_HTTP2HTTPS", data.get("http2https", True))
+if "lets_encrypt" in data:
+    # kept so restore-module can re-create the route with the same setting
+    agent.set_env("TRAEFIK_LETS_ENCRYPT", data["lets_encrypt"])
 
 # Public address Foundry advertises. Kept in sync with the Traefik host name;
 # also the value the license is bound to.
@@ -47,14 +59,14 @@ auth_method = data.get("auth_method", "credentials")
 if auth_method == "release_url":
     set_secret("FOUNDRY_RELEASE_URL", data.get("release_url", ""))
     agent.set_env("FOUNDRY_USERNAME", "")
-    agent.set_env("FOUNDRY_PASSWORD", "")
+    clear_secret("FOUNDRY_PASSWORD")
 else:
     agent.set_env("FOUNDRY_USERNAME", data.get("foundry_username", ""))
     set_secret("FOUNDRY_PASSWORD", data.get("foundry_password", ""))
-    agent.set_env("FOUNDRY_RELEASE_URL", "")
+    clear_secret("FOUNDRY_RELEASE_URL")
 
 set_secret("FOUNDRY_LICENSE_KEY", data.get("license_key", ""))
 agent.set_env("FOUNDRY_VERSION", data.get("foundry_version", ""))
 agent.set_env("TZ", data.get("timezone") or "UTC")
 
-agent.dump_env()
+modsecrets.write(changed)

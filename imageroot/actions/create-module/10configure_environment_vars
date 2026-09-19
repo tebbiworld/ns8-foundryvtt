@@ -22,12 +22,7 @@ agent.set_env("WEB_PORT", web_port)
 agent.set_env("FOUNDRY_CONTAINER_HOSTNAME", os.environ["MODULE_ID"])
 
 # Defaults for the settings that stay empty until the admin configures them.
-agent.set_env("FOUNDRY_ADMIN_KEY", "")
 agent.set_env("FOUNDRY_USERNAME", "")
-agent.set_env("FOUNDRY_PASSWORD", "")
-agent.set_env("FOUNDRY_RELEASE_URL", "")
-agent.set_env("FOUNDRY_LICENSE_KEY", "")
 agent.set_env("FOUNDRY_VERSION", "")
 agent.set_env("TZ", "UTC")
 
-agent.dump_env()

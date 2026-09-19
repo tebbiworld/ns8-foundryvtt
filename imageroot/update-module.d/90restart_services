@@ -13,4 +13,4 @@ set -e
 exec 1>&2
 
 systemctl --user daemon-reload
-systemctl --user restart foundryvtt.service
+systemctl --user try-restart foundryvtt.service foundryvtt-app.service
