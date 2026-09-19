@@ -11,6 +11,10 @@ Alignment with the NethServer module conventions (NethServer/agents skills).
 - **Working restore.** New `restore-module` steps re-apply every setting on the restored instance.
 - Service restarts list every unit of the pod explicitly.
 
+### Fixed
+
+- `build-images.sh` builds the UI itself. It relied on a locally built `ui/dist`, so a build on a clean checkout (CI, the automatic upstream release) failed.
+
 ### Added
 
 - Robot Framework tests (install, update from the previous release, backup and restore) run on real NS8 nodes through `stephdl/ns8-ci-actions`.
