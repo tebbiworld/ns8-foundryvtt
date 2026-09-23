@@ -15,12 +15,24 @@ set -e
 
 runtime_dir="${1:?runtime dir (%t) required}"
 
+# Secrets live in state/passwords.env (mode 0600), not in the module
+# environment. Read them here line by line (values may contain any character)
+# and hand them to podman through the process environment, so they never show
+# up on a command line.
+while IFS='=' read -r key value; do
+    case "${key}" in
+        FOUNDRY_ADMIN_KEY|FOUNDRY_PASSWORD|FOUNDRY_LICENSE_KEY|FOUNDRY_RELEASE_URL)
+            if [ -n "${value}" ]; then export "${key}=${value}"; fi ;;
+    esac
+done < <(cat passwords.env 2>/dev/null)
+
 optional=()
+[ -n "${FOUNDRY_ADMIN_KEY}" ]   && optional+=(--env FOUNDRY_ADMIN_KEY)
 [ -n "${FOUNDRY_VERSION}" ]     && optional+=(--env "FOUNDRY_VERSION=${FOUNDRY_VERSION}")
-[ -n "${FOUNDRY_LICENSE_KEY}" ] && optional+=(--env "FOUNDRY_LICENSE_KEY=${FOUNDRY_LICENSE_KEY}")
-[ -n "${FOUNDRY_RELEASE_URL}" ] && optional+=(--env "FOUNDRY_RELEASE_URL=${FOUNDRY_RELEASE_URL}")
+[ -n "${FOUNDRY_LICENSE_KEY}" ] && optional+=(--env FOUNDRY_LICENSE_KEY)
+[ -n "${FOUNDRY_RELEASE_URL}" ] && optional+=(--env FOUNDRY_RELEASE_URL)
 [ -n "${FOUNDRY_USERNAME}" ]    && optional+=(--env "FOUNDRY_USERNAME=${FOUNDRY_USERNAME}")
-[ -n "${FOUNDRY_PASSWORD}" ]    && optional+=(--env "FOUNDRY_PASSWORD=${FOUNDRY_PASSWORD}")
+[ -n "${FOUNDRY_PASSWORD}" ]    && optional+=(--env FOUNDRY_PASSWORD)
 
 exec /usr/bin/podman run \
     --conmon-pidfile "${runtime_dir}/foundryvtt-app.pid" \
@@ -32,7 +44,6 @@ exec /usr/bin/podman run \
     --env "FOUNDRY_HOSTNAME=${FOUNDRY_HOSTNAME}" \
     --env FOUNDRY_PROXY_SSL=true \
     --env FOUNDRY_PROXY_PORT=443 \
-    --env "FOUNDRY_ADMIN_KEY=${FOUNDRY_ADMIN_KEY}" \
     --env CONTAINER_PRESERVE_CONFIG=true \
     "${optional[@]}" \
     --volume foundryvtt-data:/data:z \
